@@ -1,7 +1,7 @@
-// src/components/LineChart.js
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Chart from 'chart.js/auto';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import 'chartjs-adapter-date-fns';
@@ -57,111 +57,113 @@ const LineChart = () => {
   }, [data]);
 
   const createChart = (data) => {
-    const ctx = canvasRef.current.getContext('2d');
+    if (typeof window !== 'undefined') {
+      const ctx = canvasRef.current.getContext('2d');
 
-    const labels = data.map(record => new Date(record['DATE&TIME']));
-    const lafmax = data.map(record => parseFloat(record['LAFMAX']));
-    const lafmin = data.map(record => parseFloat(record['LAFMIN']));
-    const lae = data.map(record => parseFloat(record['LAE']));
-    const laeq = data.map(record => parseFloat(record['LAEQ']));
+      const labels = data.map(record => new Date(record['DATE&TIME']));
+      const lafmax = data.map(record => parseFloat(record['LAFMAX']));
+      const lafmin = data.map(record => parseFloat(record['LAFMIN']));
+      const lae = data.map(record => parseFloat(record['LAE']));
+      const laeq = data.map(record => parseFloat(record['LAEQ']));
 
-    chartRef.current = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'LAFMAX',
-            data: lafmax,
-            borderColor: 'rgba(255, 99, 132, 1)',
-            borderWidth: 1,
-            fill: false,
-            pointRadius: 0,
-            tension: 0
-          },
-          {
-            label: 'LAFMIN',
-            data: lafmin,
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1,
-            fill: false,
-            pointRadius: 0,
-            tension: 0
-          },
-          {
-            label: 'LAE',
-            data: lae,
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 1,
-            fill: false,
-            pointRadius: 0,
-            tension: 0
-          },
-          {
-            label: 'LAEQ',
-            data: laeq,
-            borderColor: 'rgba(153, 102, 255, 1)',
-            borderWidth: 1,
-            fill: false,
-            pointRadius: 0,
-            tension: 0
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        animation: false,
-        scales: {
-          x: {
-            type: 'time',
-            time: {
-              unit: 'hour',
-              stepSize: 1,
+      chartRef.current = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'LAFMAX',
+              data: lafmax,
+              borderColor: 'rgba(255, 99, 132, 1)',
+              borderWidth: 1,
+              fill: false,
+              pointRadius: 0,
+              tension: 0
             },
-            title: {
-              display: true,
-              text: 'Date & Time'
+            {
+              label: 'LAFMIN',
+              data: lafmin,
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1,
+              fill: false,
+              pointRadius: 0,
+              tension: 0
+            },
+            {
+              label: 'LAE',
+              data: lae,
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+              fill: false,
+              pointRadius: 0,
+              tension: 0
+            },
+            {
+              label: 'LAEQ',
+              data: laeq,
+              borderColor: 'rgba(153, 102, 255, 1)',
+              borderWidth: 1,
+              fill: false,
+              pointRadius: 0,
+              tension: 0
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          animation: false,
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'hour',
+                stepSize: 1,
+              },
+              title: {
+                display: true,
+                text: 'Date & Time'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Value'
+              }
             }
           },
-          y: {
-            title: {
-              display: true,
-              text: 'Value'
+          elements: {
+            line: {
+              tension: 0
+            },
+            point: {
+              radius: 0,
+              hitRadius: 5
             }
-          }
-        },
-        elements: {
-          line: {
-            tension: 0
           },
-          point: {
-            radius: 0,
-            hitRadius: 5
-          }
-        },
-        plugins: {
-          decimation: {
-            enabled: true,
-            algorithm: 'lttb',
-          },
-          zoom: {
-            pan: {
+          plugins: {
+            decimation: {
               enabled: true,
-              mode: 'xy'
+              algorithm: 'lttb',
             },
             zoom: {
-              wheel: {
-                enabled: true
+              pan: {
+                enabled: true,
+                mode: 'xy'
               },
-              pinch: {
-                enabled: true
-              },
-              mode: 'xy'
+              zoom: {
+                wheel: {
+                  enabled: true
+                },
+                pinch: {
+                  enabled: true
+                },
+                mode: 'xy'
+              }
             }
           }
         }
-      }
-    });
+      });
+    }
   };
 
   const handleFileChange = (event) => {
