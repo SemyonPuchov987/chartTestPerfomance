@@ -1,3 +1,5 @@
+'use client'
+
 import LineChart from '../components/LineChart';
 import styles from './page.module.css';
 
