@@ -37,7 +37,7 @@ const LineChart = () => {
 
   const fetchCSVData = async (file) => {
     setLoading(true);
-    const response = await fetch(`/${file}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/${file}`);
     const textData = await response.text();
     workerRef.current.postMessage({ action: 'parse', data: textData });
   };
