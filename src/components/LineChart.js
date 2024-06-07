@@ -43,7 +43,7 @@ const LineChart = () => {
   };
 
   useEffect(() => {
-    if (data) {
+    if (data && typeof window !== 'undefined') {
       if (chartRef.current) {
         chartRef.current.destroy();
       }
