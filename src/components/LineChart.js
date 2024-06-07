@@ -1,3 +1,4 @@
+// src/components/LineChart.js
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
@@ -11,35 +12,39 @@ Chart.register(zoomPlugin);
 const LineChart = () => {
   const [data, setData] = useState(null);
   const [noiseLevels, setNoiseLevels] = useState(null);
-  const [selectedFile, setSelectedFile] = useState('100k.csv'); // Default file
+  const [selectedFile, setSelectedFile] = useState('100k.csv');
   const [loading, setLoading] = useState(false);
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
   const workerRef = useRef(null);
 
   useEffect(() => {
-    workerRef.current = new Worker(new URL('../workers/worker.js', import.meta.url));
+    if (typeof window !== 'undefined') {
+      workerRef.current = new Worker(new URL('../workers/worker.js', import.meta.url));
 
-    workerRef.current.onmessage = (event) => {
-      const { data, action, noiseLevels } = event.data;
+      workerRef.current.onmessage = (event) => {
+        const { data, action, noiseLevels } = event.data;
 
-      if (action === 'parsed') {
-        setData(data);
-        setNoiseLevels(noiseLevels); // Save results level of noise
-        setLoading(false);
-      }
-    };
+        if (action === 'parsed') {
+          setData(data);
+          setNoiseLevels(noiseLevels);
+          setLoading(false);
+        }
+      };
 
-    fetchCSVData(selectedFile);
+      fetchCSVData(selectedFile);
 
-    return () => workerRef.current.terminate();
+      return () => workerRef.current.terminate();
+    }
   }, [selectedFile]);
 
   const fetchCSVData = async (file) => {
-    setLoading(true);
-    const response = await fetch(`/${file}`);
-    const textData = await response.text();
-    workerRef.current.postMessage({ action: 'parse', data: textData });
+    if (typeof window !== 'undefined') {
+      setLoading(true);
+      const response = await fetch(`${process.env.basePath}/${file}`);
+      const textData = await response.text();
+      workerRef.current.postMessage({ action: 'parse', data: textData });
+    }
   };
 
   useEffect(() => {
@@ -137,7 +142,7 @@ const LineChart = () => {
         plugins: {
           decimation: {
             enabled: true,
-            algorithm: 'lttb', // LTTB algorithm for decimation
+            algorithm: 'lttb',
           },
           zoom: {
             pan: {
@@ -173,7 +178,7 @@ const LineChart = () => {
           <p>Standard Deviation: {noiseLevels.stdDev}</p>
         </div>
       )}
-      <div className={styles.chartNav}> 
+      <div className={styles.chartNav}>
         <div>
           <label htmlFor="file-select">Select data file:</label>
           <select id="file-select" onChange={handleFileChange} value={selectedFile} className={styles.select}>
