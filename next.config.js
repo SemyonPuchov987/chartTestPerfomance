@@ -1,10 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    basePath: '/chartTestPerfomance',
-    assetPrefix: '/chartTestPerfomance/',
-    output: 'export',
+    basePath: "/chartTestPerfomance",
+    assetPrefix: "/chartTestPerfomance/",
+    output: "export",
     reactStrictMode: true,
-    trailingSlash: true,
+    env: {
+      NEXT_PUBLIC_BASE_PATH: "/chartTestPerfomance",
+    },
   };
   
   module.exports = nextConfig;
